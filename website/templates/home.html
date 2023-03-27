@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Smart Parking System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <style>
+      body {
+        background-color: #f8f9fa;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .header {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .btn-custom {
+        background-color: #28a745;
+        color: #fff;
+        border-color: #28a745;
+        border-radius: 1rem;
+        font-size: 2rem;
+        width: 6rem;
+        height: 6rem;
+        margin: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        transition: background-color 0.2s;
+      }
+
+      .btn-custom.active {
+        background-color: #dc3545;
+        border-color: #dc3545;
+      }
+
+      .btn-custom:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">Smart Parking System</div>
+
+      <div class="row justify-content-center">
+        <button id="btn1" class="btn btn-custom" status="free">1</button>
+        <button id="btn2" class="btn btn-custom" status="free">2</button>
+        <button id="btn3" class="btn btn-custom" status="free">3</button>
+        <button id="btn4" class="btn btn-custom" status="free">4</button>
+        <button id="btn5" class="btn btn-custom" status="free">5</button>
+      </div>
+    </div>
+
+    <script>
+      function updateButtonColors() {
+        fetch("/api/data/stm32")
+          .then((response) => response.json())
+          .then((data) => {
+            for (let i = 0; i < data.color.length; i++) {
+              //console.log(data);
+              var button = document.getElementById(`btn${i + 1}`);
+              if ((button.status == "wait") & (data.stm32[i] == 0)) {
+                continue;
+              } else {
+                button.style.backgroundColor = data.color[i];
+                if (data.stm32[i] == 1) {
+                  button.status = "reserved";
+                } else {
+                  button.status = "free";
+                }
+              }
+            }
+          })
+          .catch((error) => console.error(error));
+      }
+
+      function onButtonClick(button) {
+        var button_status = button.status;
+        //console.log(button_status);
+        if ((button_status = "free")) {
+          button.style.backgroundColor = "yellow";
+          button.style.color = "black";
+          button.status = "wait";
+          fetch("/api/reservation", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id: button.id }),
+          })
+            .then((response) => response.json())
+            .then((data) => console.log(data))
+            .catch((error) => console.error(error));
+        }
+      }
+
+      document
+        .getElementById("btn1")
+        .addEventListener("click", () =>
+          onButtonClick(document.getElementById("btn1"))
+        );
+      document
+        .getElementById("btn2")
+        .addEventListener("click", () =>
+          onButtonClick(document.getElementById("btn2"))
+        );
+      document
+        .getElementById("btn3")
+        .addEventListener("click", () =>
+          onButtonClick(document.getElementById("btn3"))
+        );
+      document
+        .getElementById("btn4")
+        .addEventListener("click", () =>
+          onButtonClick(document.getElementById("btn4"))
+        );
+      document
+        .getElementById("btn5")
+        .addEventListener("click", () =>
+          onButtonClick(document.getElementById("btn5"))
+        );
+
+      // Update button colors every 3 seconds
+      setInterval(updateButtonColors, 3000);
+    </script>
+  </body>
+</html>
