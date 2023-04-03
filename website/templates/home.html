@@ -83,7 +83,7 @@
       function onButtonClick(button) {
         var button_status = button.status;
         //console.log(button_status);
-        if ((button_status = "free")) {
+        if (button_status == "free") {
           button.style.backgroundColor = "yellow";
           button.style.color = "black";
           button.status = "wait";
