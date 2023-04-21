@@ -120,11 +120,6 @@
       </div>
     </div>
 
-    <script
-      src="https://kit.fontawesome.com/1234567890.js"
-      crossorigin="anonymous"
-    ></script>
-
     <script>
       //var entryCount = 0
       //var exitCount = 0
@@ -155,6 +150,7 @@
         var button_status = button.status;
         //console.log(button_status);
         if (button_status == "free") {
+          console.log(button.id);
           button.style.backgroundColor = "yellow";
           button.style.color = "black";
           button.status = "wait";
