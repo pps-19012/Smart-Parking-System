@@ -1,5 +1,5 @@
 import random  # for random generation of parking data
-
+import requests
 from flask import Blueprint, render_template, request, jsonify
 
 views = Blueprint('views', __name__)
@@ -8,18 +8,32 @@ button_color = ['#dc3545', '#28a745', '#dc3545',
                 '#dc3545', '#28a745']  # initial button colors
 
 
-@views.route('/api/data/stm32', methods=['GET'])
-def get_stm32_data():
-    # Read data from STM32
-    # data = request.args.get('data')
+# @views.route('/api/data/stm32', methods=['GET'])
+@views.route('/parkingData', methods=['GET'])
+def get_parking_data():
+    # Read data from NodeMCU server and Update Google Sheets
+
+    # Modfiy this code segment to read actual data.
+    # url = "http://192.168.157.188/"  # put the node mcu generate url here.
+    # response = requests.get(url)
+
+    # if response.status_code == 200:
+    #     print("yes!!")
+    #     data_from_server = response.json()
+    #     print("this is the data!", data_from_server['data'])
+    #     print(jsonify(data_from_server), 200)
+    # else:
+    #     print("Failed to retrieve data", 500)
 
     # This code segment is to generate random example data for the parking
     # data = "10001"  # example data
-    random_num = random.randint(50, 500)
+    random_num = random.randint(129, 500)
     binary_num = bin(random_num)[2:]
-    last_five_bits = binary_num[-5:]
+    last_five_bits = binary_num[0:5]
+    entry_bit = binary_num[6]
+    exit_bit = binary_num[7]
     data = ''.join(['1' if bit == '1' else '0' for bit in last_five_bits])
-    print("parking data: ", data)
+    # print("parking data: ", data)
 
     # Modify button color based on data
     colors = ['#28a745', '#dc3545']  # red and green
@@ -27,7 +41,7 @@ def get_stm32_data():
     for value in data:
         color.append(colors[int(value)])
         # script = f"document.getElementById('{btn_id}').style.backgroundColor='{color}'"
-    return jsonify({'color': color, 'stm32': data})
+    return jsonify({'color': color, 'stm32': data, 'entryData': entry_bit, 'exitData': exit_bit})
 
 
 @views.route('/api/reservation', methods=['POST'])
