@@ -77,6 +77,13 @@
       .parking-wrapper {
         margin: 0 50px;
       }
+      .boundary {
+        border: 4px solid black;
+        border-radius: 1rem;
+        padding: 1rem;
+        margin: 2rem auto;
+        width: fit-content;
+      }
     </style>
   </head>
   <body>
@@ -88,29 +95,31 @@
         Entry
       </div>
       <div class="parking-wrapper">
-        <div class="parking">
-          <div class="row">
-            <div class="btn-custom" id="btn1" status="free">1</div>
-            <div class="vertical-line"></div>
-            <div class="btn-custom" id="btn2" status="free">2</div>
-            <div class="vertical-line"></div>
-            <div class="btn-custom" id="btn3" status="free">3</div>
-            <div class="vertical-line"></div>
-            <div class="btn-custom" id="btn4" status="free">4</div>
-            <div class="vertical-line"></div>
-            <div class="btn-custom" id="btn5" status="free">5</div>
-          </div>
-          <div class="horizontal-line"></div>
-          <div class="row">
-            <div class="btn-custom" id="btn6" status="free">6</div>
-            <div class="vertical-line"></div>
-            <div class="btn-custom" id="btn7" status="free">7</div>
-            <div class="vertical-line"></div>
-            <div class="btn-custom" id="btn8" status="free">8</div>
-            <div class="vertical-line"></div>
-            <div class="btn-custom" id="btn9" status="free">9</div>
-            <div class="vertical-line"></div>
-            <div class="btn-custom" id="btn10" status="free">10</div>
+        <div class="boundary">
+          <div class="parking">
+            <div class="row">
+              <div class="btn-custom" id="btn1" status="free">1</div>
+              <div class="vertical-line"></div>
+              <div class="btn-custom" id="btn2" status="free">2</div>
+              <div class="vertical-line"></div>
+              <div class="btn-custom" id="btn3" status="free">3</div>
+              <div class="vertical-line"></div>
+              <div class="btn-custom" id="btn4" status="free">4</div>
+              <div class="vertical-line"></div>
+              <div class="btn-custom" id="btn5" status="free">5</div>
+            </div>
+            <div class="horizontal-line"></div>
+            <div class="row">
+              <div class="btn-custom" id="btn6" status="free">6</div>
+              <div class="vertical-line"></div>
+              <div class="btn-custom" id="btn7" status="free">7</div>
+              <div class="vertical-line"></div>
+              <div class="btn-custom" id="btn8" status="free">8</div>
+              <div class="vertical-line"></div>
+              <div class="btn-custom" id="btn9" status="free">9</div>
+              <div class="vertical-line"></div>
+              <div class="btn-custom" id="btn10" status="free">10</div>
+            </div>
           </div>
         </div>
       </div>
@@ -119,22 +128,33 @@
         Exit
       </div>
     </div>
+    <div style="text-align: center">
+      <p>Counter:</p>
+      <div id="inside-count">0</div>
+    </div>
 
     <script>
-      //var entryCount = 0
-      //var exitCount = 0
+      let entryCount = 0;
+      let exitCount = 0;
+      let inside = 0;
 
       function updateButtonColors() {
         fetch("/parkingData")
           .then((response) => response.json())
           .then((data) => {
-            for (let i = 0; i < data.color.length; i++) {
-              //console.log(data);
+            console.log(data.entryData, data.exitData);
+            entryCount += parseInt(data.entryData);
+            exitCount += parseInt(data.exitData);
+            console.log(entryCount, exitCount);
+            inside = entryCount - exitCount;
+            document.getElementById("inside-count").innerHTML = `${inside}`;
+            for (let i = 0; i < data.stm32.length; i++) {
               var button = document.getElementById(`btn${i + 1}`);
               if ((button.status == "wait") & (data.stm32[i] == 0)) {
                 continue;
               } else {
                 button.style.backgroundColor = data.color[i];
+                button.style.color = "white";
                 if (data.stm32[i] == 1) {
                   button.status = "reserved";
                 } else {
@@ -167,11 +187,6 @@
         }
       }
 
-      document
-        .getElementById("btn1")
-        .addEventListener("click", () =>
-          onButtonClick(document.getElementById("btn1"))
-        );
       document
         .getElementById("btn2")
         .addEventListener("click", () =>

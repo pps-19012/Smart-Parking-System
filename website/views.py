@@ -29,7 +29,7 @@ def get_parking_data():
     # data = "10001"  # example data
     random_num = random.randint(129, 500)
     binary_num = bin(random_num)[2:]
-    last_five_bits = binary_num[0:4]
+    last_five_bits = binary_num[0:5]
     entry_bit = binary_num[5]
     exit_bit = binary_num[6]
     data = ''.join(['1' if bit == '1' else '0' for bit in last_five_bits])
