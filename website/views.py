@@ -20,6 +20,7 @@ SAMPLE_SPREADSHEET_ID = '138K6l-Z_gsva38rQHpHxcx8Z5zo9CbQ_Hrwm8WrbDco'
 SAMPLE_RANGE_NAME1 = 'Sheet1!A1'
 SAMPLE_RANGE_NAME2 = 'Sheet1!A2'
 SAMPLE_RANGE_NAME3 = 'Sheet1!A3'
+SAMPLE_RANGE_NAME4 = 'Sheet1!A4'
 
 
 views = Blueprint('views', __name__)
@@ -61,59 +62,59 @@ def get_parking_data():
     # Read data from NodeMCU server and Update Google Sheets
 
     # Modfiy this code segment to read actual data.
-    url = "http://192.168.157.188/"  # put the node mcu generate url here.
-    response = requests.get(url)
+    # url = "http://192.168.157.188/"  # put the node mcu generate url here.
+    # response = requests.get(url)
 
-    if response.status_code == 200:
-        print("yes!!")
-        data_from_server = response.json()
-        # print("this is the data!", data_from_server['data'])
-        print(jsonify(data_from_server), 200)
-        curr_parking_data = readParkingData[0][0]
+    # if response.status_code == 200:
+    #     print("yes!!")
+    #     data_from_server = response.json()
+    #     # print("this is the data!", data_from_server['data'])
+    #     print(jsonify(data_from_server), 200)
+    #     curr_parking_data = readParkingData[0][0]
 
-        if curr_parking_data[0] == 2:
-            if data_from_server['p1'] == '1':
-                parkingspot1 = '1'
-        else:
-            parkingspot1 = data_from_server['p1']
+    #     if curr_parking_data[0] == 2:
+    #         if data_from_server['p1'] == '1':
+    #             parkingspot1 = '1'
+    #     else:
+    #         parkingspot1 = data_from_server['p1']
 
-        if curr_parking_data[1] == 2:
-            if data_from_server['p2'] == '1':
-                parkingspot2 = '1'
-        else:
-            parkingspot2 = data_from_server['p2']
+    #     if curr_parking_data[1] == 2:
+    #         if data_from_server['p2'] == '1':
+    #             parkingspot2 = '1'
+    #     else:
+    #         parkingspot2 = data_from_server['p2']
 
-        if curr_parking_data[2] == 2:
-            if data_from_server['p3'] == '1':
-                parkingspot3 = '1'
-        else:
-            parkingspot3 = data_from_server['p3']
+    #     if curr_parking_data[2] == 2:
+    #         if data_from_server['p3'] == '1':
+    #             parkingspot3 = '1'
+    #     else:
+    #         parkingspot3 = data_from_server['p3']
 
-        if curr_parking_data[3] == 2:
-            if data_from_server['p4'] == '1':
-                parkingspot4 = '1'
-        else:
-            parkingspot4 = data_from_server['p4']
+    #     if curr_parking_data[3] == 2:
+    #         if data_from_server['p4'] == '1':
+    #             parkingspot4 = '1'
+    #     else:
+    #         parkingspot4 = data_from_server['p4']
 
-        if curr_parking_data[4] == 2:
-            if data_from_server['p5'] == '1':
-                parkingspot5 = '1'
-        else:
-            parkingspot5 = data_from_server['p5']
+    #     if curr_parking_data[4] == 2:
+    #         if data_from_server['p5'] == '1':
+    #             parkingspot5 = '1'
+    #     else:
+    #         parkingspot5 = data_from_server['p5']
 
-        entry_bit = data_from_server['entry']
-        exit_bit = data_from_server['exit']
-    else:
-        print("Failed to retrieve data", 500)
+    #     entry_bit = data_from_server['entry']
+    #     exit_bit = data_from_server['exit']
+    # else:
+    #     print("Failed to retrieve data", 500)
 
     # trial data - modify this
-    # parkingspot1 = '1'
-    # parkingspot2 = '0'
-    # parkingspot3 = '1'
-    # parkingspot4 = '0'
-    # parkingspot5 = '1'
-    # entry_bit = '1'
-    # exit_bit = '0'
+    parkingspot1 = '1'
+    parkingspot2 = '0'
+    parkingspot3 = '1'
+    parkingspot4 = '0'
+    parkingspot5 = '1'
+    entry_bit = '1'
+    exit_bit = '0'
 
     # ----------------------------------------------xxxxxxxxxxxxxxxxx---------------------------------------------
     # This code segment is to generate random example data for the parking
@@ -172,24 +173,23 @@ def reserve_parking():
     res1 = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
                               range=SAMPLE_RANGE_NAME1).execute()
     readParkingData = res1.get('values', [])
+    print(readParkingData[0][0])
     parking_data = readParkingData[0][0]
-    button_id = request.json['button_id']  # extract button_id from JSON data
+    button_id = request.json['id']  # extract id from JSON data
     # get the index of the button
-    button_index = int(button_id.split('btn')[1]) - 1
+    button_index = int(button_id[3]) - 1
+    print("This is the OG button: ", button_index)
     new_parking_data = parking_data[:button_index] + \
         "2" + parking_data[button_index + 1:]
     # write parking data
     lst1 = [[new_parking_data]]
+    # lst1 = [[button_index]]
     request1 = sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME1,
                                      valueInputOption="RAW", body={"values": lst1}).execute()
-
-    return 'successfully reserved'
-
-
-def read_from_sheet():
-    return
+    print('successfully reserved')
+    return 'success'
 
 
-@views.route('/')
+@ views.route('/')
 def home():
     return render_template("home.html")
