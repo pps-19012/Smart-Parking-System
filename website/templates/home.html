@@ -157,7 +157,8 @@
                 button.style.color = "white";
                 if (data.stm32[i] == 1) {
                   button.status = "reserved";
-                } else {
+                }
+                if (data.stm32[i] == 0) {
                   button.status = "free";
                 }
               }
