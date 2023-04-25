@@ -10,9 +10,6 @@ https://developers.google.com/identity/protocols/oauth2/service-account#python
 '''
 
 
-
-
-
 # from __future__ import print_function
 
 # import os.path
@@ -33,7 +30,7 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 creds = None
 
 creds = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
 # The ID and range of a sample spreadsheet.
 SAMPLE_SPREADSHEET_ID = '138K6l-Z_gsva38rQHpHxcx8Z5zo9CbQ_Hrwm8WrbDco'
@@ -68,6 +65,8 @@ service = build('sheets', 'v4', credentials=creds)
 
 # Call the Sheets API
 sheet = service.spreadsheets()
+
+
 result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
                             range=SAMPLE_RANGE_NAME).execute()
 
@@ -75,9 +74,10 @@ result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
 values = result.get('values', [])
 print(values)
 
-lst = [['aaa', 1, 11], ['bbb', 2, 22], ['ccc', 3, 33],]
+lst = [['sex', 1, 11], ['sexy', 2, 22], ['very_sexy', 3, 33],]
 
-request = sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME2, valueInputOption="USER_ENTERED", body={"values":lst}).execute()
+request = sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME2,
+                                valueInputOption="USER_ENTERED", body={"values": lst}).execute()
 print(request)
 
 
