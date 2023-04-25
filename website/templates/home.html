@@ -188,6 +188,12 @@
       }
 
       document
+        .getElementById("btn1")
+        .addEventListener("click", () =>
+          onButtonClick(document.getElementById("btn2"))
+        );
+
+      document
         .getElementById("btn2")
         .addEventListener("click", () =>
           onButtonClick(document.getElementById("btn2"))
