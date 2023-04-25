@@ -159,6 +159,7 @@ def get_parking_data():
 
     # print(readParkingData, readEntry, readExit)
     # print(res1, res2, res3)
+
     # Modify button color based on data
     colors = ['#28a745', '#dc3545']  # red and green
     color = []
@@ -172,13 +173,13 @@ def get_parking_data():
 def reserve_parking():
     res1 = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
                               range=SAMPLE_RANGE_NAME1).execute()
-    readParkingData = res1.get('values', [])
-    print(readParkingData[0][0])
+    readParkingData = res1.get('values', [['00000']])
+    # print(readParkingData[0][0])
     parking_data = readParkingData[0][0]
-    button_id = request.json['id']  # extract id from JSON data
+    button_id = request.json['id']  # extract button_id from JSON data
     # get the index of the button
     button_index = int(button_id[3]) - 1
-    print("This is the OG button: ", button_index)
+    # print("This is the OG button: ", button_index)
     new_parking_data = parking_data[:button_index] + \
         "2" + parking_data[button_index + 1:]
     # write parking data
@@ -187,7 +188,7 @@ def reserve_parking():
     request1 = sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME1,
                                      valueInputOption="RAW", body={"values": lst1}).execute()
     print('successfully reserved')
-    return 'success'
+    return jsonify({'success': True})
 
 
 @ views.route('/')

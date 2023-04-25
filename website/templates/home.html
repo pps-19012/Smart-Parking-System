@@ -142,7 +142,7 @@
         fetch("/parkingData")
           .then((response) => response.json())
           .then((data) => {
-            console.log(data.entryData, data.exitData);
+            //console.log(data.entryData, data.exitData);
             entryCount += parseInt(data.entryData);
             exitCount += parseInt(data.exitData);
             console.log(entryCount, exitCount);
@@ -157,8 +157,7 @@
                 button.style.color = "white";
                 if (data.stm32[i] == 1) {
                   button.status = "reserved";
-                }
-                if (data.stm32[i] == 0) {
+                } else {
                   button.status = "free";
                 }
               }
@@ -215,8 +214,8 @@
           onButtonClick(document.getElementById("btn5"))
         );
 
-      // Update button colors every 5 seconds
-      setInterval(updateButtonColors, 5000);
+      // Update button colors every 10 seconds
+      setInterval(updateButtonColors, 10000);
     </script>
   </body>
 </html>
