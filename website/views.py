@@ -32,38 +32,88 @@ service = build('sheets', 'v4', credentials=creds)
 # Call the Sheets API
 sheet = service.spreadsheets()
 
+# parking = ["0", "0", "0", "0", "0"]  # initial parking data
+
 
 @views.route('/parkingData', methods=['GET'])
 def get_parking_data():
+    # read parking data
+    res1 = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
+                              range=SAMPLE_RANGE_NAME1).execute()
+    readParkingData = res1.get('values', [])
+    if readParkingData == []:
+        readParkingData = "00000"
+
+    # read entry data
+    res2 = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
+                              range=SAMPLE_RANGE_NAME2).execute()
+    readEntry = res2.get('values', [])
+    if readEntry == []:
+        readEntry = "0"
+
+    # read exit data
+    res3 = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
+                              range=SAMPLE_RANGE_NAME3).execute()
+    readExit = res3.get('values', [])
+    if readExit == []:
+        readExit = "0"
+
     # Read data from NodeMCU server and Update Google Sheets
 
     # Modfiy this code segment to read actual data.
-    # url = "http://192.168.157.188/"  # put the node mcu generate url here.
-    # response = requests.get(url)
+    url = "http://192.168.157.188/"  # put the node mcu generate url here.
+    response = requests.get(url)
 
-    # if response.status_code == 200:
-    #     print("yes!!")
-    #     data_from_server = response.json()
-    #     # print("this is the data!", data_from_server['data'])
-    #     print(jsonify(data_from_server), 200)
-    #     parkingspot1 = data_from_server['p1']
-    #     parkingspot2 = data_from_server['p2']
-    #     parkingspot3 = data_from_server['p3']
-    #     parkingspot4 = data_from_server['p4']
-    #     parkingspot5 = data_from_server['p5']
-    #     entry_bit = data_from_server['entry']
-    #     exit_bit = data_from_server['exit']
-    # else:
-    #     print("Failed to retrieve data", 500)
+    if response.status_code == 200:
+        print("yes!!")
+        data_from_server = response.json()
+        # print("this is the data!", data_from_server['data'])
+        print(jsonify(data_from_server), 200)
+        curr_parking_data = readParkingData[0][0]
 
-    # trial data
-    parkingspot1 = '1'
-    parkingspot2 = '0'
-    parkingspot3 = '1'
-    parkingspot4 = '0'
-    parkingspot5 = '1'
-    entry_bit = '1'
-    exit_bit = '0'
+        if curr_parking_data[0] == 2:
+            if data_from_server['p1'] == '1':
+                parkingspot1 = '1'
+        else:
+            parkingspot1 = data_from_server['p1']
+
+        if curr_parking_data[1] == 2:
+            if data_from_server['p2'] == '1':
+                parkingspot2 = '1'
+        else:
+            parkingspot2 = data_from_server['p2']
+
+        if curr_parking_data[2] == 2:
+            if data_from_server['p3'] == '1':
+                parkingspot3 = '1'
+        else:
+            parkingspot3 = data_from_server['p3']
+
+        if curr_parking_data[3] == 2:
+            if data_from_server['p4'] == '1':
+                parkingspot4 = '1'
+        else:
+            parkingspot4 = data_from_server['p4']
+
+        if curr_parking_data[4] == 2:
+            if data_from_server['p5'] == '1':
+                parkingspot5 = '1'
+        else:
+            parkingspot5 = data_from_server['p5']
+
+        entry_bit = data_from_server['entry']
+        exit_bit = data_from_server['exit']
+    else:
+        print("Failed to retrieve data", 500)
+
+    # trial data - modify this
+    # parkingspot1 = '1'
+    # parkingspot2 = '0'
+    # parkingspot3 = '1'
+    # parkingspot4 = '0'
+    # parkingspot5 = '1'
+    # entry_bit = '1'
+    # exit_bit = '0'
 
     # ----------------------------------------------xxxxxxxxxxxxxxxxx---------------------------------------------
     # This code segment is to generate random example data for the parking
@@ -84,9 +134,16 @@ def get_parking_data():
     lst1 = [[parking_data]]
     lst2 = [[entry_bit]]
     lst3 = [[exit_bit]]
-    print(lst1)
-    print(lst2)
-    print(lst3)
+
+    if readEntry[0][0] == "0" and entry_bit == "1":
+        entryval = "1"
+    else:
+        entryval = "0"
+
+    if readExit[0][0] == "0" and exit_bit == "1":
+        exitval = "1"
+    else:
+        exitval = "0"
 
     # write parking data
     request1 = sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME1,
@@ -99,21 +156,6 @@ def get_parking_data():
                                      valueInputOption="RAW", body={"values": lst3}).execute()
     # print(request1, request2, request3)
 
-    # read parking data
-    res1 = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
-                              range=SAMPLE_RANGE_NAME1).execute()
-    readParkingData = res1.get('values', [])
-
-    # read entry data
-    res2 = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
-                              range=SAMPLE_RANGE_NAME2).execute()
-    readEntry = res2.get('values', [])
-
-    # read exit data
-    res3 = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
-                              range=SAMPLE_RANGE_NAME3).execute()
-    readExit = res3.get('values', [])
-
     # print(readParkingData, readEntry, readExit)
     # print(res1, res2, res3)
     # Modify button color based on data
@@ -122,22 +164,30 @@ def get_parking_data():
     for value in parking_data:
         color.append(colors[int(value)])
         # script = f"document.getElementById('{btn_id}').style.backgroundColor='{color}'"
-    return jsonify({'color': color, 'stm32': readParkingData[0][0], 'entryData': readEntry[0][0], 'exitData': readExit[0][0]})
+    return jsonify({'color': color, 'stm32': readParkingData[0][0], 'entryData': entryval, 'exitData': exitval})
 
 
 @views.route('/api/reservation', methods=['POST'])
 def reserve_parking():
-    # button_id = request.form['button_id']
-    # button_index = int(button_id.split('btn')[1]) - 1
-    # current_color = button_color[button_index]
-
-    # if current_color == '#28a745':
-    #     # change to yellow
-    #     button_color[button_index] = '#ffc107'
-    #     # send post request to reservation API
-    #     # reservation_response = requests.post('api/reservation', data={'button_id': button_id})
+    res1 = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
+                              range=SAMPLE_RANGE_NAME1).execute()
+    readParkingData = res1.get('values', [])
+    parking_data = readParkingData[0][0]
+    button_id = request.json['button_id']  # extract button_id from JSON data
+    # get the index of the button
+    button_index = int(button_id.split('btn')[1]) - 1
+    new_parking_data = parking_data[:button_index] + \
+        "2" + parking_data[button_index + 1:]
+    # write parking data
+    lst1 = [[new_parking_data]]
+    request1 = sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME1,
+                                     valueInputOption="RAW", body={"values": lst1}).execute()
 
     return 'successfully reserved'
+
+
+def read_from_sheet():
+    return
 
 
 @views.route('/')
