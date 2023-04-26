@@ -45,6 +45,19 @@
         transition: background-color 0.2s;
       }
 
+      .btn-custome {
+        background-color: gray;
+        color: #fff;
+        border-color: #28a745;
+        border-radius: 1rem;
+        font-size: 2rem;
+        width: 6rem;
+        height: 6rem;
+        margin: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        transition: background-color 0.2s;
+      }
+
       .btn-custom.active {
         background-color: #dc3545;
         border-color: #dc3545;
@@ -110,15 +123,15 @@
             </div>
             <div class="horizontal-line"></div>
             <div class="row">
-              <div class="btn-custom" id="btn6" status="free">6</div>
+              <div class="btn-custome" id="btn6" status="free">6</div>
               <div class="vertical-line"></div>
-              <div class="btn-custom" id="btn7" status="free">7</div>
+              <div class="btn-custome" id="btn7" status="free">7</div>
               <div class="vertical-line"></div>
-              <div class="btn-custom" id="btn8" status="free">8</div>
+              <div class="btn-custome" id="btn8" status="free">8</div>
               <div class="vertical-line"></div>
-              <div class="btn-custom" id="btn9" status="free">9</div>
+              <div class="btn-custome" id="btn9" status="free">9</div>
               <div class="vertical-line"></div>
-              <div class="btn-custom" id="btn10" status="free">10</div>
+              <div class="btn-custome" id="btn10" status="free">10</div>
             </div>
           </div>
         </div>
@@ -150,15 +163,16 @@
             document.getElementById("inside-count").innerHTML = `${inside}`;
             for (let i = 0; i < data.stm32.length; i++) {
               var button = document.getElementById(`btn${i + 1}`);
-              if ((button.status == "wait") & (data.stm32[i] == 0)) {
+              if (data.stm32[i] == 2) {
                 continue;
               } else {
                 button.style.backgroundColor = data.color[i];
                 button.style.color = "white";
                 if (data.stm32[i] == 1) {
-                  button.status = "reserved";
-                } else {
                   button.status = "free";
+                }
+                if (data.stm32[i] == 0) {
+                  button.status = "reserved";
                 }
               }
             }
@@ -214,8 +228,8 @@
           onButtonClick(document.getElementById("btn5"))
         );
 
-      // Update button colors every 10 seconds
-      setInterval(updateButtonColors, 10000);
+      // Update button colors every 2 seconds
+      setInterval(updateButtonColors, 2000);
     </script>
   </body>
 </html>
