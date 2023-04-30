@@ -159,7 +159,7 @@
             entryCount += parseInt(data.entryData);
             exitCount += parseInt(data.exitData);
             console.log(entryCount, exitCount);
-            inside = entryCount - exitCount;
+            inside = -entryCount + exitCount;
             document.getElementById("inside-count").innerHTML = `${inside}`;
             for (let i = 0; i < data.stm32.length; i++) {
               var button = document.getElementById(`btn${i + 1}`);

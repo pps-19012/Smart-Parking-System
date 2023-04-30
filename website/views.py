@@ -20,7 +20,7 @@ timer = [0, 0, 0, 0, 0]  # timer for each parking spot
 def get_parking_data():
     # Read data from NodeMCU server and Update Google Sheets
     # Modfiy this code segment to read actual data.
-    url = "http://192.168.17.188/"  # put the node mcu generate url here.
+    url = "http://192.168.218.188/"  # put the node mcu generate url here.
     response = requests.get(url)
     if response.status_code == 200:
         print("yes!!")
@@ -74,16 +74,16 @@ def get_parking_data():
         exit_bit = str(data_from_server['data6'])
 
         if entry_exit[0] == "1" and entry_bit == "0":
-            entry_val = "1"
-        else:
             entry_val = "0"
+        else:
+            entry_val = "1"
         entry_exit[0] = entry_bit
 
         if entry_exit[1] == "1" and exit_bit == "0":
-            exit_val = "1"
+            exit_val = "0"
             entry_exit[1] = "0"
         else:
-            exit_val = "0"
+            exit_val = "1"
         entry_exit[1] = exit_bit
 
         for i in range(len(timer)):
@@ -103,6 +103,7 @@ def get_parking_data():
 
     parking_data = "".join(curr_parking_data)
     print("Parking Data:", parking_data)
+    print("Entry Exit:", entry_val, exit_val)
     # Modify button color based on data
     colors = ['#dc3545', '#28a745']  # red and green
     color = []
