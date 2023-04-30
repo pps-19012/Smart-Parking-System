@@ -8,7 +8,8 @@
 - Make sure that your device and NodeMCU are connected to the same network
 - Run main.py: `python main.py `
 - Website is hosted at http://127.0.0.1:5000
-- put image here
+
+![website](https://github.com/pps-19012/Smart-Parking-System/blob/main/layout.png)
 
 ## Features
 
