@@ -7,7 +7,7 @@ views = Blueprint('views', __name__)
 button_color = ['#dc3545', '#28a745', '#dc3545',
                 '#dc3545', '#28a745']  # initial button colors
 curr_parking_data = ["0", "0", "0", "0", "0"]  # initial parking data
-entry_exit = ["1", "1"]
+entry_exit = ["1", "1"]  # intial entry and exit data
 timer = [0, 0, 0, 0, 0]  # timer for each parking spot
 # parkingspot1 = "0"
 # parkingspot2 = "0"
@@ -19,11 +19,11 @@ timer = [0, 0, 0, 0, 0]  # timer for each parking spot
 @views.route('/parkingData', methods=['GET'])
 def get_parking_data():
     # Read data from NodeMCU server and Update Google Sheets
-    # Modfiy this code segment to read actual data.
+
     url = "http://192.168.218.188/"  # put the node mcu generate url here.
     response = requests.get(url)
     if response.status_code == 200:
-        print("yes!!")
+        # print("Retrieved data successfully")
         data_from_server = response.json()
         if curr_parking_data[0] == '2':
             if str(data_from_server['data0']) == '0':
@@ -74,21 +74,20 @@ def get_parking_data():
         exit_bit = str(data_from_server['data6'])
 
         if entry_exit[0] == "1" and entry_bit == "0":
-            entry_val = "0"
-        else:
             entry_val = "1"
+        else:
+            entry_val = "0"
         entry_exit[0] = entry_bit
 
         if entry_exit[1] == "1" and exit_bit == "0":
-            exit_val = "0"
-            entry_exit[1] = "0"
-        else:
             exit_val = "1"
+        else:
+            exit_val = "0"
         entry_exit[1] = exit_bit
 
         for i in range(len(timer)):
             if timer[i] > 0:
-                print("Reserved: ", i, " Timer: ", timer[i])
+                # print("Reserved: ", i, " Timer: ", timer[i])
                 if curr_parking_data[i] == '2':
                     if timer[i] - 10 <= 0:
                         curr_parking_data[i] = '1'

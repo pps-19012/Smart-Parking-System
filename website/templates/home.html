@@ -155,12 +155,16 @@
         fetch("/parkingData")
           .then((response) => response.json())
           .then((data) => {
-            //console.log(data.entryData, data.exitData);
+            // Update the entry and exit count
             entryCount += parseInt(data.entryData);
             exitCount += parseInt(data.exitData);
             console.log(entryCount, exitCount);
-            inside = -entryCount + exitCount;
+            inside = entryCount - exitCount;
+
+            // Update the counter
             document.getElementById("inside-count").innerHTML = `${inside}`;
+
+            // Iterate through the data to update the button colors
             for (let i = 0; i < data.stm32.length; i++) {
               var button = document.getElementById(`btn${i + 1}`);
               if (data.stm32[i] == 2) {
@@ -172,7 +176,7 @@
                   button.status = "free";
                 }
                 if (data.stm32[i] == 0) {
-                  button.status = "reserved";
+                  button.status = "occupied";
                 }
               }
             }
@@ -182,12 +186,11 @@
 
       function onButtonClick(button) {
         var button_status = button.status;
-        //console.log(button_status);
         if (button_status == "free") {
           console.log(button.id);
           button.style.backgroundColor = "yellow";
           button.style.color = "black";
-          button.status = "wait";
+          button.status = "reserved";
           fetch("/api/reservation", {
             method: "POST",
             headers: {
