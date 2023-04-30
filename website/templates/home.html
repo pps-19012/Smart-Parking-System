@@ -20,8 +20,33 @@
         margin-bottom: 2rem;
       }
 
+      .parking {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+      }
+
       .btn-custom {
         background-color: #28a745;
+        color: #fff;
+        border-color: #28a745;
+        border-radius: 1rem;
+        font-size: 2rem;
+        width: 6rem;
+        height: 6rem;
+        margin: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        transition: background-color 0.2s;
+      }
+
+      .btn-custome {
+        background-color: gray;
         color: #fff;
         border-color: #28a745;
         border-radius: 1rem;
@@ -37,42 +62,117 @@
         background-color: #dc3545;
         border-color: #dc3545;
       }
-
       .btn-custom:hover {
         background-color: #c82333;
         border-color: #bd2130;
       }
+
+      .vertical-line {
+        border-left: 2px solid black;
+        height: 7.5rem;
+        margin: 0.5rem;
+      }
+
+      .horizontal-line {
+        border-top: 2px solid black;
+        width: 35rem;
+        margin: 1rem 0;
+      }
+
+      .entry-exit {
+        font-size: 2.5rem;
+        margin: 1rem 0;
+      }
+      .entry-exit-arrow {
+        font-size: 3rem;
+        margin: 0 1rem;
+      }
+      .parking-wrapper {
+        margin: 0 50px;
+      }
+      .boundary {
+        border: 4px solid black;
+        border-radius: 1rem;
+        padding: 1rem;
+        margin: 2rem auto;
+        width: fit-content;
+      }
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="header">Smart Parking System</div>
+    <h1 class="header">Parking Space</h1>
 
-      <div class="row justify-content-center">
-        <button id="btn1" class="btn btn-custom" status="free">1</button>
-        <button id="btn2" class="btn btn-custom" status="free">2</button>
-        <button id="btn3" class="btn btn-custom" status="free">3</button>
-        <button id="btn4" class="btn btn-custom" status="free">4</button>
-        <button id="btn5" class="btn btn-custom" status="free">5</button>
+    <div class="row">
+      <div class="entry-exit">
+        <div class="entry-exit-arrow">&rarr;</div>
+        Entry
       </div>
+      <div class="parking-wrapper">
+        <div class="boundary">
+          <div class="parking">
+            <div class="row">
+              <div class="btn-custome" id="btn6" status="free">6</div>
+              <div class="vertical-line"></div>
+              <div class="btn-custome" id="btn7" status="free">7</div>
+              <div class="vertical-line"></div>
+              <div class="btn-custome" id="btn8" status="free">8</div>
+              <div class="vertical-line"></div>
+              <div class="btn-custome" id="btn9" status="free">9</div>
+              <div class="vertical-line"></div>
+              <div class="btn-custome" id="btn10" status="free">10</div>
+            </div>
+            <div class="horizontal-line"></div>
+            <div class="row">
+              <div class="btn-custom" id="btn1" status="free">1</div>
+              <div class="vertical-line"></div>
+              <div class="btn-custom" id="btn2" status="free">2</div>
+              <div class="vertical-line"></div>
+              <div class="btn-custom" id="btn3" status="free">3</div>
+              <div class="vertical-line"></div>
+              <div class="btn-custom" id="btn4" status="free">4</div>
+              <div class="vertical-line"></div>
+              <div class="btn-custom" id="btn5" status="free">5</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="entry-exit">
+        <div class="entry-exit-arrow">&rarr;</div>
+        Exit
+      </div>
+    </div>
+    <div style="text-align: center">
+      <h3>Counter:</h3>
+      <h3><div id="inside-count">0</div></h3>
     </div>
 
     <script>
+      let entryCount = 0;
+      let exitCount = 0;
+      let inside = 0;
+
       function updateButtonColors() {
-        fetch("/api/data/stm32")
+        fetch("/parkingData")
           .then((response) => response.json())
           .then((data) => {
-            for (let i = 0; i < data.color.length; i++) {
-              //console.log(data);
+            //console.log(data.entryData, data.exitData);
+            entryCount += parseInt(data.entryData);
+            exitCount += parseInt(data.exitData);
+            console.log(entryCount, exitCount);
+            inside = -entryCount + exitCount;
+            document.getElementById("inside-count").innerHTML = `${inside}`;
+            for (let i = 0; i < data.stm32.length; i++) {
               var button = document.getElementById(`btn${i + 1}`);
-              if ((button.status == "wait") & (data.stm32[i] == 0)) {
+              if (data.stm32[i] == 2) {
                 continue;
               } else {
                 button.style.backgroundColor = data.color[i];
+                button.style.color = "white";
                 if (data.stm32[i] == 1) {
-                  button.status = "reserved";
-                } else {
                   button.status = "free";
+                }
+                if (data.stm32[i] == 0) {
+                  button.status = "reserved";
                 }
               }
             }
@@ -84,6 +184,7 @@
         var button_status = button.status;
         //console.log(button_status);
         if (button_status == "free") {
+          console.log(button.id);
           button.style.backgroundColor = "yellow";
           button.style.color = "black";
           button.status = "wait";
@@ -105,6 +206,7 @@
         .addEventListener("click", () =>
           onButtonClick(document.getElementById("btn1"))
         );
+
       document
         .getElementById("btn2")
         .addEventListener("click", () =>
@@ -126,8 +228,8 @@
           onButtonClick(document.getElementById("btn5"))
         );
 
-      // Update button colors every 5 seconds
-      setInterval(updateButtonColors, 5000);
+      // Update button colors every 2 seconds
+      setInterval(updateButtonColors, 2000);
     </script>
   </body>
 </html>
