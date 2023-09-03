@@ -1,5 +1,10 @@
 # Smart-Parking-System
 
+## Contents
+- [How to Run](#how-to-run)
+- [Features](#features)
+- [Working](#working)
+
 ## How to Run
 
 - Clone the repository
